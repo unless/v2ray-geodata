@@ -37,16 +37,25 @@ define Package/v2ray-geosite
   LICENSE:=GPL-3.0
 endef
 
+define Package/v2ray-geoip-asn
+  $(call Package/v2ray-geodata/default)
+  TITLE:=GeoIP ASN List for V2Ray
+  LICENSE:=CC-BY-SA-4.0
+endef
+
 GEOIP_URL:=https://github.com/Loyalsoldier/geoip/releases/latest/download/geoip-only-cn-private.dat
 GEOSITE_URL:=https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
+GEOIP_ASN_URL:=https://github.com/Loyalsoldier/geoip/releases/latest/download/geoip-asn.dat
 
 define Build/Compile
 	( \
 		pushd $(PKG_BUILD_DIR) ; \
 		curl -L $(GEOIP_URL) -o geoip.dat --progress-bar ; \
 		curl -L $(GEOSITE_URL) -o geosite.dat --progress-bar ; \
+		curl -L $(GEOIP_ASN_URL) -o geoip-asn.dat --progress-bar ; \
 		[ "$(curl -sL $(GEOIP_URL).sha256sum | awk '{print $1}')" != "$(sha256sum geoip.dat | awk '{print $1}')" ] && exit 1 ; \
 		[ "$(curl -sL $(GEOSITE_URL).sha256sum | awk '{print $1}')" != "$(sha256sum geosite.dat | awk '{print $1}')" ] && exit 1 ; \
+		[ "$(curl -sL $(GEOIP_ASN_URL).sha256sum | awk '{print $1}')" != "$(sha256sum geoip-asn.dat | awk '{print $1}')" ] && exit 1 ; \
 		popd ; \
 	)
 endef
@@ -61,5 +70,11 @@ define Package/v2ray-geosite/install
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/geosite.dat $(1)/usr/share/v2ray/geosite.dat
 endef
 
+define Package/v2ray-geoip-asn/install
+	$(INSTALL_DIR) $(1)/usr/share/v2ray
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/geoip-asn.dat $(1)/usr/share/v2ray/geoip-asn.dat
+endef
+
 $(eval $(call BuildPackage,v2ray-geoip))
 $(eval $(call BuildPackage,v2ray-geosite))
+$(eval $(call BuildPackage,v2ray-geoip-asn))
