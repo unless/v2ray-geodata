@@ -43,22 +43,18 @@ define Package/v2ray-geoip-asn
   LICENSE:=CC-BY-SA-4.0
 endef
 
-GEOIP_URL:=https://github.com/Loyalsoldier/geoip/releases/latest/download/geoip-only-cn-private.dat
+GEOIP_URL:=https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
 GEOSITE_URL:=https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
-GEOIP_ASN_URL:=https://github.com/Loyalsoldier/geoip/releases/latest/download/geoip-asn.dat
 
 define Build/Compile
 	mkdir -p $(PKG_BUILD_DIR) ; \
 	cd $(PKG_BUILD_DIR) || exit 1 ; \
 	curl -fL --retry 3 --progress-bar $(GEOIP_URL) -o geoip.dat || exit 1 ; \
 	curl -fL --retry 3 --progress-bar $(GEOSITE_URL) -o geosite.dat || exit 1 ; \
-	curl -fL --retry 3 --progress-bar $(GEOIP_ASN_URL) -o geoip-asn.dat || exit 1 ; \
 	curl -fsL --retry 3 $(GEOIP_URL).sha256sum -o geoip.dat.sha256sum || exit 1 ; \
 	curl -fsL --retry 3 $(GEOSITE_URL).sha256sum -o geosite.dat.sha256sum || exit 1 ; \
-	curl -fsL --retry 3 $(GEOIP_ASN_URL).sha256sum -o geoip-asn.dat.sha256sum || exit 1 ; \
 	sed 's|[[:space:]].*|  geoip.dat|' geoip.dat.sha256sum | sha256sum -c - || exit 1 ; \
 	sed 's|[[:space:]].*|  geosite.dat|' geosite.dat.sha256sum | sha256sum -c - || exit 1 ; \
-	sed 's|[[:space:]].*|  geoip-asn.dat|' geoip-asn.dat.sha256sum | sha256sum -c - || exit 1
 endef
 
 define Package/v2ray-geoip/install
@@ -71,11 +67,5 @@ define Package/v2ray-geosite/install
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/geosite.dat $(1)/usr/share/v2ray/geosite.dat
 endef
 
-define Package/v2ray-geoip-asn/install
-	$(INSTALL_DIR) $(1)/usr/share/v2ray
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/geoip-asn.dat $(1)/usr/share/v2ray/geoip-asn.dat
-endef
-
 $(eval $(call BuildPackage,v2ray-geoip))
 $(eval $(call BuildPackage,v2ray-geosite))
-$(eval $(call BuildPackage,v2ray-geoip-asn))
