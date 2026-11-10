@@ -48,16 +48,17 @@ GEOSITE_URL:=https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/dow
 GEOIP_ASN_URL:=https://github.com/Loyalsoldier/geoip/releases/latest/download/geoip-asn.dat
 
 define Build/Compile
-	( \
-		pushd $(PKG_BUILD_DIR) ; \
-		curl -L $(GEOIP_URL) -o geoip.dat --progress-bar ; \
-		curl -L $(GEOSITE_URL) -o geosite.dat --progress-bar ; \
-		curl -L $(GEOIP_ASN_URL) -o geoip-asn.dat --progress-bar ; \
-		[ "$(curl -sL $(GEOIP_URL).sha256sum | awk '{print $1}')" != "$(sha256sum geoip.dat | awk '{print $1}')" ] && exit 1 ; \
-		[ "$(curl -sL $(GEOSITE_URL).sha256sum | awk '{print $1}')" != "$(sha256sum geosite.dat | awk '{print $1}')" ] && exit 1 ; \
-		[ "$(curl -sL $(GEOIP_ASN_URL).sha256sum | awk '{print $1}')" != "$(sha256sum geoip-asn.dat | awk '{print $1}')" ] && exit 1 ; \
-		popd ; \
-	)
+	mkdir -p $(PKG_BUILD_DIR) ; \
+	cd $(PKG_BUILD_DIR) || exit 1 ; \
+	curl -fL --retry 3 --progress-bar $(GEOIP_URL) -o geoip.dat || exit 1 ; \
+	curl -fL --retry 3 --progress-bar $(GEOSITE_URL) -o geosite.dat || exit 1 ; \
+	curl -fL --retry 3 --progress-bar $(GEOIP_ASN_URL) -o geoip-asn.dat || exit 1 ; \
+	curl -fsL --retry 3 $(GEOIP_URL).sha256sum -o geoip.dat.sha256sum || exit 1 ; \
+	curl -fsL --retry 3 $(GEOSITE_URL).sha256sum -o geosite.dat.sha256sum || exit 1 ; \
+	curl -fsL --retry 3 $(GEOIP_ASN_URL).sha256sum -o geoip-asn.dat.sha256sum || exit 1 ; \
+	sed 's|[[:space:]].*|  geoip.dat|' geoip.dat.sha256sum | sha256sum -c - || exit 1 ; \
+	sed 's|[[:space:]].*|  geosite.dat|' geosite.dat.sha256sum | sha256sum -c - || exit 1 ; \
+	sed 's|[[:space:]].*|  geoip-asn.dat|' geoip-asn.dat.sha256sum | sha256sum -c - || exit 1
 endef
 
 define Package/v2ray-geoip/install
