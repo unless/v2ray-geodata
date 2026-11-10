@@ -37,12 +37,6 @@ define Package/v2ray-geosite
   LICENSE:=GPL-3.0
 endef
 
-define Package/v2ray-geoip-asn
-  $(call Package/v2ray-geodata/default)
-  TITLE:=GeoIP ASN List for V2Ray
-  LICENSE:=CC-BY-SA-4.0
-endef
-
 GEOIP_URL:=https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat
 GEOSITE_URL:=https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat
 
