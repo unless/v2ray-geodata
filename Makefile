@@ -3,15 +3,12 @@
 #
 # This is free software, licensed under the GNU General Public License v3.
 #
-
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=v2ray-geodata
 PKG_VERSION:=$(shell date "+%Y.%m.%d")
 PKG_RELEASE:=1
-
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
-
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=sbwml <admin@cooluc.com>
 
@@ -48,7 +45,7 @@ define Build/Compile
 	curl -fsL --retry 3 $(GEOIP_URL).sha256sum -o geoip.dat.sha256sum || exit 1 ; \
 	curl -fsL --retry 3 $(GEOSITE_URL).sha256sum -o geosite.dat.sha256sum || exit 1 ; \
 	sed 's|[[:space:]].*|  geoip.dat|' geoip.dat.sha256sum | sha256sum -c - || exit 1 ; \
-	sed 's|[[:space:]].*|  geosite.dat|' geosite.dat.sha256sum | sha256sum -c - || exit 1 ; \
+	sed 's|[[:space:]].*|  geosite.dat|' geosite.dat.sha256sum | sha256sum -c - || exit 1
 endef
 
 define Package/v2ray-geoip/install
